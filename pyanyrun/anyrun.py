@@ -74,6 +74,8 @@ class AnyRunClient:
         return params
     
     def get_public_tasks(self, **kwargs) -> t.Any:
+        '''Get public tasks based on the given query parameters.'''
+
         params = self.create_params(**kwargs)
         task_id = generate_token(n=17)
 
@@ -104,6 +106,8 @@ class AnyRunClient:
         return results
     
     def search(self, **kwargs) -> t.Any:
+        '''Search tasks based on the given query parameters.'''
+        
         params = self.create_params(**kwargs)
         task_id = generate_id()
         
