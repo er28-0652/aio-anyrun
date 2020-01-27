@@ -51,9 +51,9 @@ class AnyRunClient:
         domain: str = '', file_hash: str = '', mitre_id: str = '', suricata_sid: int = 0,
         significant: bool = False, tag: str = '', skip: int = 0) -> dict:
         
-        _run_type = [run_type] if isinstance(run_type, str) else run_type
-        _verdict = [verdict] if isinstance(verdict, str) else verdict
-        _extensions = [extensions] if isinstance(extensions, str) else extensions
+        _run_type = [run_type] if not isinstance(run_type, list) else run_type
+        _verdict = [verdict] if not isinstance(verdict, list) else verdict
+        _extensions = [extensions] if not isinstance(extensions, list) else extensions
 
         params = {
             'isPublic': is_public,
