@@ -1,0 +1,127 @@
+import json
+import string
+import random
+import typing as t
+from websocket import create_connection
+
+from .const import RUN_TYPES, T_RUN_TYPES, T_EXTENSIONS, EXTENSIONS, T_VERDICTS, VERDICTS
+
+def generate_token(n=8) -> str:
+    letters = string.ascii_lowercase + '1234567890'
+    return ''.join(random.choice(letters) for _ in range(n))
+
+def generate_id() -> int:
+    return random.randint(100, 999)
+
+
+
+class AnyRunError(Exception):
+    pass
+
+class AnyRunClient:
+    def __init__(self):
+        self.ws = create_connection(
+            f'wss://app.any.run/sockjs/{generate_id()}/{generate_token()}/websocket')
+        self._init_connection()
+        self._task_id = 0
+    
+    def send_message(self, msg: dict):
+        self.ws.send(json.dumps([json.dumps(msg)]))
+
+    def _init_connection(self):
+        self.send_message({'msg': 'connect', 'version': '1', 'support': ['1', 'pre2', 'pre1']})
+
+    def subscribe(self, name: str, params: list = None) -> None:
+        if not params:
+            params = []
+        self.send_message({'msg': 'sub', 'id': generate_token(), 'name': name, 'params': params})
+
+    def get_task_id(self):
+        self._task_id += 1
+        return str(self._task_id)
+        
+    def recv_message(self):
+        r = self.ws.recv()
+        if len(r) > 1:
+            return json.loads(json.loads(r[1:])[0])
+ 
+    @staticmethod
+    def create_params(is_public: bool = True, hash_: str = '', run_type: T_RUN_TYPES = [],
+        name: str = '', verdict: T_VERDICTS = [], extensions: T_EXTENSIONS = [], ip: str = '',
+        domain: str = '', file_hash: str = '', mitre_id: str = '', suricata_sid: int = 0,
+        significant: bool = False, tag: str = '', skip: int = 0) -> dict:
+        
+        _run_type = [run_type] if isinstance(run_type, str) else run_type
+        _verdict = [verdict] if isinstance(verdict, str) else verdict
+        _extensions = [extensions] if isinstance(extensions, str) else extensions
+
+        params = {
+            'isPublic': is_public,
+            'hash': hash_,
+            'runtype': [RUN_TYPES.get(rt.lower()) for rt in _run_type],
+            'name': name,
+            'verdict': [VERDICTS.get(v.lower()) for v in _verdict],
+            'ext': [EXTENSIONS.get(ext.lower()) for ext in _extensions],
+            'ip': ip,
+            'domain': domain,
+            'fileHash': file_hash,
+            'mitreId': mitre_id,
+            'sid': suricata_sid,
+            'significant': significant,
+            'tag': tag,
+            'skip': skip
+        }
+        return params
+    
+    def get_public_tasks(self, **kwargs) -> t.Any:
+        params = self.create_params(**kwargs)
+        task_id = generate_token(n=17)
+
+        self.send_message(
+            {
+                'msg': 'sub',
+                'name': 'publicTasks',
+                'params': [params['skip']+50, params['skip'], params], # only latest 50 items
+                'id': task_id
+            }
+        )
+        
+        results = []
+        while True:   
+            msg = self.recv_message()
+            
+            if msg is None:
+                continue
+
+            if msg.get('msg') == 'error':
+                raise AnyRunError(f'{msg["reason"]}, offendingMessage={msg["offendingMessage"]}')
+                    
+            if msg.get('msg') == 'ready' and msg.get('subs') and msg.get('subs')[0] == task_id:
+                break
+            
+            if msg.get('msg') == 'added' and msg.get('collection') == 'tasks':
+                results.append(msg.get('fields'))
+        return results
+    
+    def search(self, **kwargs) -> t.Any:
+        params = self.create_params(**kwargs)
+        task_id = generate_id()
+        
+        self.send_message(
+            {
+                'msg': 'method',
+                'method': 'getTasks',
+                'params': [params],
+                'id': task_id
+            }
+        )
+        
+        while True:
+            msg = self.recv_message()
+            if msg is None:
+                continue
+            if msg.get('msg') == 'result' and msg['id'] == task_id:
+                if msg.get('error') is not None:
+                    raise AnyRunError(msg['error']['message'])
+                return msg['result']
+
