@@ -198,11 +198,11 @@ class AnyRunClient:
                 return self.login_info
 
     def _check_task_exists(self, uuid: str) -> t.Any:
-        token = generate_token(n=17)
+        task_id = generate_token(n=17)
         self.send_message(
             {
                 'msg': 'sub',
-                'id':token,
+                'id': task_id,
                 'name':'taskexists',
                 'params':[uuid]
             }
@@ -218,16 +218,16 @@ class AnyRunClient:
             elif msg.get('msg') == 'added' and msg.get('collection') == 'taskExists':
                 result = msg['fields']['taskObjectId']
 
-            elif msg.get('msg') == 'ready' and msg.get('subs')[0] == token:
+            elif msg.get('msg') == 'ready' and msg.get('subs')[0] == task_id:
                 break
         return result
 
     def _get_single_task(self, object_id: dict) -> t.Any:
-        token = generate_token(n=17)
+        task_id = generate_token(n=17)
         self.send_message(
             {
                 'msg': 'sub',
-                'id': token,
+                'id': task_id,
                 'name': 'singleTask',
                 'params': [object_id, False]
             }
@@ -242,7 +242,7 @@ class AnyRunClient:
             elif msg.get('msg') == 'added' and msg.get('collection') == 'tasks':
                 results.append(msg['fields'])
             
-            elif msg.get('msg') == 'ready' and msg.get('subs')[0] == token:
+            elif msg.get('msg') == 'ready' and msg.get('subs')[0] == task_id:
                 break
         return results
 
