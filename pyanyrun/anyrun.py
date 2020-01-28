@@ -197,7 +197,7 @@ class AnyRunClient:
                 self.login_info = msg['fields']
                 return self.login_info
 
-    def check_task_exists(self, uuid: str) -> t.Any:
+    def _check_task_exists(self, uuid: str) -> t.Any:
         token = generate_token(n=17)
         self.send_message(
             {
@@ -247,5 +247,5 @@ class AnyRunClient:
         return results
 
     def get_single_task(self, uuid):        
-        object_id = self.check_task_exists(uuid)
+        object_id = self._check_task_exists(uuid)
         return self._get_single_task(object_id)
