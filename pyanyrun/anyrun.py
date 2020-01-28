@@ -5,6 +5,7 @@ import random
 import typing as t
 from websocket import create_connection
 
+import .collection
 import .const as cst
 
 def generate_token(n=8) -> str:
@@ -89,7 +90,7 @@ class AnyRunClient:
         }
         return params
     
-    def get_public_tasks(self, **kwargs) -> t.Any:
+    def get_public_tasks(self, **kwargs) -> t.List[collection.Task]:
         '''Get public tasks based on the given query parameters.'''
 
         params = self.create_params(**kwargs)
@@ -118,7 +119,7 @@ class AnyRunClient:
                 break
             
             if msg.get('msg') == 'added' and msg.get('collection') == 'tasks':
-                results.append(msg.get('fields'))
+                results.append(collection.Task(msg.get('fields')))
         return results
     
     def search(self, **kwargs) -> t.Any:
@@ -195,3 +196,30 @@ class AnyRunClient:
             if msg.get('msg') == 'added' and msg.get('collection') == 'users':
                 self.login_info = msg['fields']
                 return self.login_info
+
+    def get_single_task(self, uuid):
+        token = generate_token(n=17)
+        self.send_message({'msg':'sub','id':token,'name':'taskexists','params':[uuid]})
+        
+        object_id = None
+        running_tasks = None
+        results = []
+        while True:
+            msg = self.recv_message()
+            if msg is None:
+                continue
+            
+            if msg.get('msg') == 'added' and msg.get('collection') == 'taskExists':
+                object_id = msg['fields']['taskObjectId']
+            
+            if msg.get('msg') == 'ready' and msg.get('subs')[0] == token and object_id:
+                running_tasks = generate_token(n=17)
+                self.send_message({'msg':'sub','id':running_tasks,'name':'singleTask','params':[object_id, False]})
+
+            if msg.get('msg') == 'added' and msg.get('collection') == 'tasks':
+                results.append(msg['fields'])
+
+            if msg.get('msg') == 'ready' and running_tasks == msg.get('subs')[0]:
+                break
+            
+        return results
