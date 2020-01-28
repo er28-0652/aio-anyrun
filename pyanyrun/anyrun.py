@@ -197,29 +197,55 @@ class AnyRunClient:
                 self.login_info = msg['fields']
                 return self.login_info
 
-    def get_single_task(self, uuid):
+    def check_task_exists(self, uuid: str) -> t.Any:
         token = generate_token(n=17)
-        self.send_message({'msg':'sub','id':token,'name':'taskexists','params':[uuid]})
-        
-        object_id = None
-        running_tasks = None
+        self.send_message(
+            {
+                'msg': 'sub',
+                'id':token,
+                'name':'taskexists',
+                'params':[uuid]
+            }
+        )
+
+        result = None
+        while True:
+            msg = self.recv_message()
+            
+            if msg is None:
+                continue
+
+            elif msg.get('msg') == 'added' and msg.get('collection') == 'taskExists':
+                result = msg['fields']['taskObjectId']
+
+            elif msg.get('msg') == 'ready' and msg.get('subs')[0] == token:
+                break
+        return result
+
+    def _get_single_task(self, object_id: dict) -> t.Any:
+        token = generate_token(n=17)
+        self.send_message(
+            {
+                'msg': 'sub',
+                'id': token,
+                'name': 'singleTask',
+                'params': [object_id, False]
+            }
+        )
+
         results = []
         while True:
             msg = self.recv_message()
             if msg is None:
                 continue
-            
-            if msg.get('msg') == 'added' and msg.get('collection') == 'taskExists':
-                object_id = msg['fields']['taskObjectId']
-            
-            if msg.get('msg') == 'ready' and msg.get('subs')[0] == token and object_id:
-                running_tasks = generate_token(n=17)
-                self.send_message({'msg':'sub','id':running_tasks,'name':'singleTask','params':[object_id, False]})
 
-            if msg.get('msg') == 'added' and msg.get('collection') == 'tasks':
+            elif msg.get('msg') == 'added' and msg.get('collection') == 'tasks':
                 results.append(msg['fields'])
-
-            if msg.get('msg') == 'ready' and running_tasks == msg.get('subs')[0]:
-                break
             
+            elif msg.get('msg') == 'ready' and msg.get('subs')[0] == token:
+                break
         return results
+
+    def get_single_task(self, uuid):        
+        object_id = self.check_task_exists(uuid)
+        return self._get_single_task(object_id)
