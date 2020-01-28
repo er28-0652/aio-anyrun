@@ -1,3 +1,4 @@
+import hashlib
 import json
 import string
 import random
@@ -24,6 +25,7 @@ class AnyRunClient:
             f'wss://app.any.run/sockjs/{generate_id()}/{generate_token()}/websocket')
         self._init_connection()
         self._task_id = 0
+        self.login_info = None
     
     def send_message(self, msg: dict):
         self.ws.send(json.dumps([json.dumps(msg)]))
@@ -138,8 +140,58 @@ class AnyRunClient:
             msg = self.recv_message()
             if msg is None:
                 continue
+
+            if msg.get('error') is not None:
+                raise AnyRunError(msg['error']['message'])
+            
             if msg.get('msg') == 'result' and msg['id'] == task_id:
-                if msg.get('error') is not None:
-                    raise AnyRunError(msg['error']['message'])
                 return msg['result']
 
+    def logout(self):
+        '''Do logout. you should login first.'''
+
+        if self.login_info is not None:
+            self.send_message(
+                {
+                    'msg': 'method',
+                    'method': 'logout',
+                    'params': [],
+                    'id': self.get_task_id()
+                }
+            )
+            self.login_info = None
+    
+    def login(self, email: str, password: str) -> t.Any:
+        '''Do login. will get login token.'''
+
+        if self.login_info is not None:
+            return self.login_info
+        
+        self.send_message(
+            {
+                'msg': 'method',
+                'method': 'login',
+                'params': [
+                    {
+                        'user': {
+                            'email': email
+                        },
+                        'password': {
+                            'digest': hashlib.sha256(password.encode('utf-8')).hexdigest(),
+                            'algorithm': 'sha-256'
+                        }
+                    }
+                ],
+                'id': self.get_task_id()
+            }
+        )
+        
+        while True:
+            msg = self.recv_message()
+            
+            if msg is None:
+                continue
+
+            if msg.get('msg') == 'added' and msg.get('collection') == 'users':
+                self.login_info = msg['fields']
+                return self.login_info
