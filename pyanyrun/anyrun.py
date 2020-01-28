@@ -4,7 +4,7 @@ import random
 import typing as t
 from websocket import create_connection
 
-from .const import RUN_TYPES, T_RUN_TYPES, T_EXTENSIONS, EXTENSIONS, T_VERDICTS, VERDICTS
+import .const as cst
 
 def generate_token(n=8) -> str:
     letters = string.ascii_lowercase + '1234567890'
@@ -46,10 +46,24 @@ class AnyRunClient:
             return json.loads(json.loads(r[1:])[0])
  
     @staticmethod
-    def create_params(is_public: bool = True, hash_: str = '', run_type: T_RUN_TYPES = [],
-        name: str = '', verdict: T_VERDICTS = [], extensions: T_EXTENSIONS = [], ip: str = '',
+    def create_params(is_public: bool = True, hash_: str = '', run_type: cst.RUN_TYPES.types = [],
+        name: str = '', verdict: cst.VERDICTS.types = [], extensions: cst.EXTENSIONS.types = [], ip: str = '',
         domain: str = '', file_hash: str = '', mitre_id: str = '', suricata_sid: int = 0,
         significant: bool = False, tag: str = '', skip: int = 0) -> dict:
+        '''Create parameters for query.
+        Args:
+            is_public: always True.
+            hash_: file hash to query.
+            run_type: object type. acceptable 'file' and 'url'.
+            name: file name to query.
+            verdict: verdict to query. acceptable 'malicious', 'normal' and 'no-threats'.
+            extensions: file type to query. acceptable 'exe', 'dll', 'java', 'html', 
+                'flash', 'pdf', 'office', 'script', 'email'
+            ip: IP address to query.
+            significant: sorry idk, but usually False.
+            tag: tag names.
+            skip: items numbers to skip.
+        '''
         
         _run_type = [run_type] if not isinstance(run_type, list) else run_type
         _verdict = [verdict] if not isinstance(verdict, list) else verdict
@@ -58,10 +72,10 @@ class AnyRunClient:
         params = {
             'isPublic': is_public,
             'hash': hash_,
-            'runtype': [RUN_TYPES.get(rt.lower()) for rt in _run_type],
+            'runtype': [cst.RUN_TYPES.data.get(rt.lower()) for rt in _run_type],
             'name': name,
-            'verdict': [VERDICTS.get(v.lower()) for v in _verdict],
-            'ext': [EXTENSIONS.get(ext.lower()) for ext in _extensions],
+            'verdict': [cst.VERDICTS.data.get(v.lower()) for v in _verdict],
+            'ext': [cst.EXTENSIONS.data.get(ext.lower()) for ext in _extensions],
             'ip': ip,
             'domain': domain,
             'fileHash': file_hash,
@@ -107,7 +121,7 @@ class AnyRunClient:
     
     def search(self, **kwargs) -> t.Any:
         '''Search tasks based on the given query parameters.'''
-        
+
         params = self.create_params(**kwargs)
         task_id = generate_id()
         
