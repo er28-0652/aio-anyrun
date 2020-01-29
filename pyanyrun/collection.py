@@ -1,4 +1,4 @@
-import .const as cst
+from pyanyrun import const as cst
 
 
 class Task:
@@ -54,7 +54,7 @@ class Task:
     
     @property
     def info(self) -> dict:
-        return self._info['info']
+        return self.main_object['info']
         
     @property
     def file_type(self):

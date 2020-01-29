@@ -5,8 +5,9 @@ import random
 import typing as t
 from websocket import create_connection
 
-import .collection
-import .const as cst
+from pyanyrun import collection
+from pyanyrun import const as cst
+
 
 def generate_token(n=8) -> str:
     letters = string.ascii_lowercase + '1234567890'
@@ -19,6 +20,7 @@ def generate_id() -> int:
 
 class AnyRunError(Exception):
     pass
+
 
 class AnyRunClient:
     def __init__(self):
