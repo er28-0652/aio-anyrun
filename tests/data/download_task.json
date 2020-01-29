@@ -1,0 +1,250 @@
+{
+    "significant": false,
+    "status": 100,
+    "remaining": 0,
+    "times": {
+        "resync": null,
+        "addedTimeout": 0,
+        "timeout": 60,
+        "tryExec": {
+            "$date": 1580316321239
+        },
+        "stopExec": {
+            "$date": 1580316380508
+        },
+        "startExec": {
+            "$date": 1580316321306
+        },
+        "taskStart": {
+            "$date": 1580316303503
+        }
+    },
+    "public": {
+        "objects": {
+            "mainObject": {
+                "entropy": 7.7565125537776725,
+                "__v": 0,
+                "task": {
+                    "$type": "oid",
+                    "$value": "5e31b68f421642114a0f70c7"
+                },
+                "info": {
+                    "meta": {
+                        "file": "Microsoft Word 2007+",
+                        "mime": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        "exif": {
+                            "ZIP": {
+                                "ZipRequiredVersion": 20,
+                                "ZipBitFlag": "0x0006",
+                                "ZipCompression": "Deflated",
+                                "ZipModifyDate": "1980:01:01 00:00:00",
+                                "ZipCRC": "0x0c0cc35b",
+                                "ZipCompressedSize": 400,
+                                "ZipUncompressedSize": 1505,
+                                "ZipFileName": "[Content_Types].xml"
+                            },
+                            "XMP": {
+                                "Title": "",
+                                "Subject": "",
+                                "Creator": "",
+                                "Description": ""
+                            },
+                            "XML": {
+                                "Keywords": "",
+                                "LastModifiedBy": "",
+                                "RevisionNumber": 1,
+                                "CreateDate": "2020:01:29 06:24:00Z",
+                                "ModifyDate": "2020:01:29 06:24:00Z",
+                                "Template": "Normal.dotm",
+                                "TotalEditTime": 0,
+                                "Pages": 1,
+                                "Words": 5,
+                                "Characters": 29,
+                                "Application": "Microsoft Office Word",
+                                "DocSecurity": "None",
+                                "Lines": 1,
+                                "Paragraphs": 1,
+                                "ScaleCrop": "No",
+                                "Company": "",
+                                "LinksUpToDate": "No",
+                                "CharactersWithSpaces": 33,
+                                "SharedDoc": "No",
+                                "HyperlinksChanged": "No",
+                                "AppVersion": 16
+                            }
+                        },
+                        "ole": {
+                            "has_macros": true,
+                            "has_embeded": false,
+                            "autostart": true,
+                            "autoclose": false,
+                            "report": {
+                                "macros": [
+                                    {
+                                        "name": "'VBA/Klterktmy'"
+                                    },
+                                    {
+                                        "name": "'VBA/Kpznipiacjyei'"
+                                    },
+                                    {
+                                        "name": "'VBA/Lssespxitdqvq'"
+                                    },
+                                    {
+                                        "name": "'VBA/Muicjdkbted'",
+                                        "autostart": true
+                                    },
+                                    {
+                                        "name": "'VBA/Tycbsfnene'"
+                                    },
+                                    {
+                                        "name": "'VBA/Tycbsfnene'"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "idents": [
+                        {
+                            "procent": 53.6,
+                            "extension": ".docm",
+                            "filetype": "Word Microsoft Office Open XML Format document (with Macro)"
+                        },
+                        {
+                            "procent": 24.2,
+                            "extension": ".docx",
+                            "filetype": "Word Microsoft Office Open XML Format document"
+                        },
+                        {
+                            "procent": 18,
+                            "extension": ".zip",
+                            "filetype": "Open Packaging Conventions container"
+                        },
+                        {
+                            "procent": 4.1,
+                            "extension": ".zip",
+                            "filetype": "ZIP compressed archive"
+                        }
+                    ]
+                },
+                "_id": {
+                    "$type": "oid",
+                    "$value": "5e31b68f421642114a0f70c8"
+                },
+                "hide_source": false,
+                "discovered": true,
+                "need_discover": false,
+                "threat": [],
+                "hashes": {
+                    "ssdeep": "3072:CX44OFYXO52I2DsTUyEpf/Eg22wNGdAB3It8KlRBOMe:644zHDYUFf/XyGd230RIMe",
+                    "head_hash": "41b27648248fe27f359b9ddc9fa33d93",
+                    "sha256": "135e6e64bd7742b372ada6b825319eb55fa6081a563f2bb5b8c41b146badb7e9",
+                    "sha1": "f942e141f11540a1a3a387fad48df8329f46d4d8",
+                    "md5": "69f2aa8e265b0a19c125471c5c43ef0e"
+                },
+                "times": {
+                    "discovered": {
+                        "$date": 1580316304653
+                    },
+                    "added": {
+                        "$date": 1580316303504
+                    }
+                },
+                "content": {
+                    "size": 135766,
+                    "eof": true,
+                    "present": true,
+                    "id": {
+                        "$type": "oid",
+                        "$value": "5e31b68f421642114a0f70c9"
+                    },
+                    "preview": {
+                        "antiviruses": false,
+                        "whois": false,
+                        "hex": true,
+                        "html": false,
+                        "vba": false,
+                        "js": false,
+                        "json": false,
+                        "text": false,
+                        "image": false
+                    },
+                    "ext": "docm"
+                },
+                "reason": {
+                    "message": "The main inspected object"
+                },
+                "names": {
+                    "basename": "t1iwp9952-08439-tvag3zr5f",
+                    "real": "t1iwp9952-08439-tvag3zr5f",
+                    "url": "http://tesuya.example.c0m",
+                    "location": "temp",
+                    "need_rename": true
+                },
+                "subtype": "mainobject",
+                "type": "file",
+                "uuid": "ce242e17-a083-424d-88cd-52f0d7427ac4",
+                "version": 1
+            },
+            "runType": "download"
+        },
+        "options": {
+            "presentation": false,
+            "private": "public"
+        },
+        "environment": {
+            "OS": {
+                "sp": "1",
+                "product_type": "Client",
+                "full": "Windows 7 Professional Service Pack 1 (build: 7601, 32 bit)",
+                "build": 7601,
+                "type": "complete",
+                "elPrompt": false,
+                "major": "7",
+                "bitness": "32",
+                "variant": "Professional",
+                "product": "Windows"
+            }
+        }
+    },
+    "usersTags": [],
+    "tags": [
+        "macros",
+        "macros-on-open",
+        "emotet-doc",
+        "emotet",
+        "generated-doc",
+        "loader",
+        "banker"
+    ],
+    "scores": {
+        "specs": {
+            "tor": false,
+            "spam": false,
+            "low_access": false,
+            "autostart": false,
+            "mem_overrun": false,
+            "cpu_overrun": false,
+            "static_detections": false,
+            "susp_struct": false,
+            "exploitable": false,
+            "stealing": false,
+            "service_luncher": false,
+            "network_loader": true,
+            "network_threats": false,
+            "injects": false,
+            "debug_output": false,
+            "executable_dropped": true,
+            "multiprocessing": true,
+            "crashed_apps": false,
+            "crashed_task": false,
+            "uac_request": false,
+            "not_started": false,
+            "reboot": false
+        },
+        "verdict": {
+            "threat_level": 0,
+            "text": "No threats detected"
+        }
+    },
+    "uuid": "640a15a3-7b2c-4b84-ab4a-fde92f409455"
+}

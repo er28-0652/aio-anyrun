@@ -1,0 +1,129 @@
+{
+    "significant": false,
+    "status": 100,
+    "remaining": 14,
+    "times": {
+        "resync": null,
+        "addedTimeout": 60,
+        "timeout": 120,
+        "tryExec": {
+            "$date": 1580316236006
+        },
+        "stopExec": {
+            "$date": 1580316342273
+        },
+        "startExec": {
+            "$date": 1580316236060
+        },
+        "taskStart": {
+            "$date": 1580316220283
+        }
+    },
+    "public": {
+        "objects": {
+            "mainObject": {
+                "entropy": 4.970259412396355,
+                "info": {
+                    "cmd": "chrome.exe \"\"%FILENAME%\"\""
+                },
+                "_id": {
+                    "$type": "oid",
+                    "$value": "5e31b63c421642114a0f70a3"
+                },
+                "hide_source": false,
+                "discovered": false,
+                "need_discover": true,
+                "threat": [],
+                "hashes": {
+                    "ssdeep": "3:N8icVDNXEGwEH2KICDxDhFV1HPDnTsVYALcTfvrKCNdRuMLOH/YkxXR0uB5V0DCH:2ik5UGwu2KICpPLwcjdjLo/TBzL6CH",
+                    "head_hash": "2f9f2d78dc3afd163157800fb331a9f7",
+                    "sha256": "d62f9198484404c0b2a6322145b3b0476013570e4ef96e5a5a8ece84e1b42132",
+                    "sha1": "7f8dfc4d5d8740dae6a98fe0de08fc6589aafe39",
+                    "md5": "2f9f2d78dc3afd163157800fb331a9f7"
+                },
+                "times": {
+                    "added": {
+                        "$date": 1580316220284
+                    }
+                },
+                "content": {
+                    "preview": {
+                        "antiviruses": false,
+                        "whois": false,
+                        "hex": true,
+                        "html": false,
+                        "vba": false,
+                        "js": false,
+                        "json": false,
+                        "text": false,
+                        "image": false
+                    }
+                },
+                "reason": {
+                    "message": "The main inspected object"
+                },
+                "names": {
+                    "url": "https://tesuya.example.c0m",
+                    "location": "temp",
+                    "need_rename": false
+                },
+                "subtype": "mainobject",
+                "type": "url",
+                "uuid": "ce070dac-fd23-4060-a1dd-70d40ab215d5",
+                "version": 1
+            },
+            "runType": "url"
+        },
+        "options": {
+            "presentation": false,
+            "private": "public"
+        },
+        "environment": {
+            "OS": {
+                "sp": "1",
+                "product_type": "Client",
+                "full": "Windows 7 Professional Service Pack 1 (build: 7601, 32 bit)",
+                "build": 7601,
+                "type": "complete",
+                "elPrompt": false,
+                "major": "7",
+                "bitness": "32",
+                "variant": "Professional",
+                "product": "Windows"
+            }
+        }
+    },
+    "usersTags": [],
+    "tags": [],
+    "scores": {
+        "specs": {
+            "tor": false,
+            "spam": false,
+            "low_access": false,
+            "autostart": false,
+            "mem_overrun": false,
+            "cpu_overrun": false,
+            "static_detections": false,
+            "susp_struct": false,
+            "exploitable": false,
+            "stealing": false,
+            "service_luncher": false,
+            "network_loader": false,
+            "network_threats": true,
+            "injects": false,
+            "debug_output": false,
+            "executable_dropped": false,
+            "multiprocessing": true,
+            "crashed_apps": false,
+            "crashed_task": false,
+            "uac_request": false,
+            "not_started": false,
+            "reboot": false
+        },
+        "verdict": {
+            "threat_level": 2,
+            "text": "Malicious activity"
+        }
+    },
+    "uuid": "08d7c9ed-df02-403f-b07d-3ceb9f1ba05f"
+}

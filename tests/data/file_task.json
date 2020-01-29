@@ -1,0 +1,208 @@
+{
+    "significant": false,
+    "status": 100,
+    "remaining": 203,
+    "times": {
+        "resync": null,
+        "addedTimeout": 240,
+        "timeout": 300,
+        "tryExec": {
+            "$date": 1580316118641
+        },
+        "stopExec": {
+            "$date": 1580316216726
+        },
+        "startExec": {
+            "$date": 1580316119545
+        },
+        "taskStart": {
+            "$date": 1580316101757
+        }
+    },
+    "public": {
+        "objects": {
+            "mainObject": {
+                "entropy": 7.602179111263057,
+                "__v": 0,
+                "task": {
+                    "$type": "oid",
+                    "$value": "5e31b5c5421642114a0f706d"
+                },
+                "info": {
+                    "meta": {
+                        "mime": "application/x-dosexec",
+                        "file": "PE32 executable (GUI) Intel 80386, for MS Windows",
+                        "exif": {
+                            "EXE": {
+                                "MachineType": "Intel 386 or later, and compatibles",
+                                "TimeStamp": "2020:01:25 05:59:44+01:00",
+                                "PEType": "PE32",
+                                "LinkerVersion": 12,
+                                "CodeSize": 581120,
+                                "InitializedDataSize": 1761280,
+                                "UninitializedDataSize": 0,
+                                "EntryPoint": "0x27dcd",
+                                "OSVersion": 5.1,
+                                "ImageVersion": 0,
+                                "SubsystemVersion": 5.1,
+                                "Subsystem": "Windows GUI",
+                                "FileVersionNumber": "0.0.0.0",
+                                "ProductVersionNumber": "0.0.0.0",
+                                "FileFlagsMask": "0x0000",
+                                "FileFlags": "(none)",
+                                "FileOS": "Win32",
+                                "ObjectFileType": "Executable application",
+                                "FileSubtype": 0,
+                                "LanguageCode": "English (British)",
+                                "CharacterSet": "Unicode"
+                            }
+                        },
+                        "ole": null
+                    },
+                    "idents": [
+                        {
+                            "procent": 64.6,
+                            "extension": ".exe",
+                            "filetype": "Win64 Executable (generic)"
+                        },
+                        {
+                            "procent": 15.4,
+                            "extension": ".dll",
+                            "filetype": "Win32 Dynamic Link Library (generic)"
+                        },
+                        {
+                            "procent": 10.5,
+                            "extension": ".exe",
+                            "filetype": "Win32 Executable (generic)"
+                        },
+                        {
+                            "procent": 4.6,
+                            "extension": ".exe",
+                            "filetype": "Generic Win/DOS Executable"
+                        },
+                        {
+                            "procent": 4.6,
+                            "extension": ".exe",
+                            "filetype": "DOS Executable Generic"
+                        }
+                    ]
+                },
+                "_id": {
+                    "$type": "oid",
+                    "$value": "5e31b5c5421642114a0f706e"
+                },
+                "hide_source": false,
+                "discovered": true,
+                "need_discover": false,
+                "threat": [],
+                "hashes": {
+                    "ssdeep": "49152:au0c++OCvkGs9FaFVQy+KXgOCdWCsGn+yS6MPRXzR9ES2lzY:lB3vkJ9yFCwCZ+PL5XtmSU",
+                    "head_hash": "2a63cdb0044faa39cd5469ba0a8c30f6",
+                    "sha256": "506ed9fbcc62fb6cbc5cff33fb535d0b2d8964129f0a2f9f5419c47f6be854db",
+                    "sha1": "96a2558e0fbc103907c6aa119e85598d30ad330a",
+                    "md5": "b41645da3e04766bd250ccc3921f1bd4"
+                },
+                "times": {
+                    "discovered": {
+                        "$date": 1580316101764
+                    },
+                    "added": {
+                        "$date": 1580316101758
+                    }
+                },
+                "content": {
+                    "size": 2406400,
+                    "eof": true,
+                    "present": true,
+                    "id": {
+                        "$type": "oid",
+                        "$value": "5e31b5c58aea6240f9000ed0"
+                    },
+                    "preview": {
+                        "antiviruses": false,
+                        "whois": false,
+                        "hex": true,
+                        "html": false,
+                        "vba": false,
+                        "js": false,
+                        "json": false,
+                        "text": false,
+                        "image": false
+                    },
+                    "ext": "exe"
+                },
+                "reason": {
+                    "message": "The main inspected object"
+                },
+                "names": {
+                    "basename": "Scan_Draft-BLs.img.exe",
+                    "real": "Scan_Draft-BLs.img.exe",
+                    "location": "temp",
+                    "need_rename": false
+                },
+                "subtype": "mainobject",
+                "type": "file",
+                "uuid": "63bf34af-fb9a-4b4f-b2eb-1950a3a2debe",
+                "version": 1
+            },
+            "runType": "file"
+        },
+        "options": {
+            "presentation": false,
+            "private": "public"
+        },
+        "environment": {
+            "OS": {
+                "sp": "1",
+                "product_type": "Client",
+                "full": "Windows 7 Professional Service Pack 1 (build: 7601, 32 bit)",
+                "build": 7601,
+                "type": "complete",
+                "elPrompt": false,
+                "major": "7",
+                "bitness": "32",
+                "variant": "Professional",
+                "product": "Windows"
+            }
+        }
+    },
+    "usersTags": [],
+    "tags": [
+        "keylogger",
+        "hawkeye",
+        "stealer",
+        "evasion",
+        "trojan"
+    ],
+    "scores": {
+        "specs": {
+            "tor": false,
+            "spam": true,
+            "low_access": false,
+            "autostart": true,
+            "mem_overrun": false,
+            "cpu_overrun": false,
+            "static_detections": false,
+            "susp_struct": true,
+            "exploitable": false,
+            "stealing": true,
+            "service_luncher": false,
+            "network_loader": false,
+            "network_threats": false,
+            "injects": false,
+            "debug_output": false,
+            "executable_dropped": true,
+            "multiprocessing": true,
+            "crashed_apps": false,
+            "crashed_task": false,
+            "uac_request": false,
+            "not_started": false,
+            "reboot": false
+        },
+        "verdict": {
+            "threat_level": 2,
+            "text": "Malicious activity"
+        }
+    },
+    "uuid": "acdcbcf3-4b3a-42ca-aae5-736683b86800"
+}
