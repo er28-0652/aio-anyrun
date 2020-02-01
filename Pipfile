@@ -11,9 +11,6 @@ tox = "*"
 aiohttp = "*"
 typing-extensions = "*"
 
-[requires]
-python_version = "3.8"
-
 [scripts]
 tests = "pytest -v"
 test-cov = "pytest -v --cov=weatherlib --cov-report=html"
