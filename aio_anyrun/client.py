@@ -12,7 +12,7 @@ def generate_token(n=8) -> str:
     letters = string.ascii_lowercase + '1234567890'
     return ''.join(random.choice(letters) for _ in range(n))
 
-def generate_id():
+def generate_id() -> str:
     return str(random.randint(100, 999))
 
 
@@ -22,6 +22,16 @@ class AnyRunError(Exception):
 
 class AnyRunClient:
     '''
+    Usage:
+        connect with contextmanager
+        ... async with AnyRunClient.connect() as client:
+        ...     tasks = await client.get_public_tasks()
+
+        connect by your self (close connection by yourself)
+        ... client = AnyRunClient()
+        ... await client.init_connection_with_default_client()
+        ... tasks = await client.get_public_tasks()
+        ... await client.close()
     
     '''
 
@@ -38,31 +48,38 @@ class AnyRunClient:
         self.cleint = None
         self._current_token_id = 1
     
-    async def init_client(self, user_agent='', autoclose=True, timeout=30):
+    async def _init_client(self, user_agent='', autoclose=True, timeout=30):
         self.client = await self.session.ws_connect(
             f'wss://app.any.run/sockjs/{generate_id()}/{generate_token()}/websocket',
             headers={'User-Agent': user_agent},
             autoclose=autoclose,
             receive_timeout=timeout)
         
-    async def init_connection(self):
+    async def _init_connection(self):
         await self._send_message({
             'msg': 'connect',
             'version': '1',
             'support': ['1', 'pre2', 'pre1']})
+
+    async def init_connection_with_default_client(self):
+        await self._init_client()
+        await self._init_connection()
+    
+    async def close(self):
+        await self.client.close()
+        await self.session.close()
 
     @staticmethod
     @asynccontextmanager
     async def connect(user_agent='', autoclose=True, timeout=30):
         try:
             anyrun = AnyRunClient()
-            await anyrun.init_client(user_agent, autoclose, timeout)
-            await anyrun.init_connection()
+            await anyrun._init_client(user_agent, autoclose, timeout)
+            await anyrun._init_connection()
             yield anyrun
             
         finally:
-            await anyrun.client.close()
-            await anyrun.session.close()
+            await anyrun.close()
 
     @property
     def _task_id(self):
