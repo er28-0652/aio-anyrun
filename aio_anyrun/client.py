@@ -5,8 +5,12 @@ import time
 import string
 import random
 import typing as t
-from contextlib import asynccontextmanager
 from pathlib import Path
+
+try:
+    from contextlib import asynccontextmanager
+except ImportError:
+    from async_generator import asynccontextmanager
 
 from aio_anyrun import collection
 from aio_anyrun import const as cst

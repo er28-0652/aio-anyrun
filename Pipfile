@@ -10,6 +10,7 @@ aiounittest = "*"
 [packages]
 aiohttp = "*"
 typing-extensions = "*"
+async-generator = "*"
 
 [scripts]
 tests = "pytest -v"
