@@ -1,6 +1,5 @@
 from aio_anyrun import const as cst
 
-
 class Task:
     def __init__(self, task_info):
         self._info = task_info
@@ -36,6 +35,18 @@ class Task:
     @property
     def hashes(self) -> dict:
         return self.main_object['hashes']
+
+    @property
+    def md5(self):
+        return self.hashes['md5']
+
+    @property
+    def sha1(self):
+        return self.hashes['sha1']
+    
+    @property
+    def sha256(self):
+        return self.hashes['sha256']
     
     @property
     def object_uuid(self) -> str:
