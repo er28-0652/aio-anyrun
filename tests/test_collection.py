@@ -2,7 +2,7 @@ import json
 import unittest
 from pathlib import Path
 
-from pyanyrun import collection
+from aio_anyrun import collection
 
 TEST_DATA_DIR = Path(__file__).parent  / 'data' 
 
