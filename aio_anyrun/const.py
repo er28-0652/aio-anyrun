@@ -41,3 +41,6 @@ VERDICTS = AnyRunConsts(
         'no-threats': 0
     }
 )
+
+# type of handler for websocket response
+HANDLER_FUNC = t.Callable[[], t.Awaitable[dict]]
