@@ -4,6 +4,9 @@
 
 Asynchronous python client of [ANY.RUN](https://app.any.run/) using unofficial API.
 
+## Requirement
+* python >= 3.8
+
 ## Usage
 
 ### Basic Usage
@@ -16,19 +19,8 @@ async with AnyRunClient.connect() as client:
     if client.login('<YOUR_EMAIL_ADDRESS>', '<YOUR_PASSWORD>'):
         tasks = await client.get_public_tasks()
         for task in tasks:
-            if task.run_type != 'url':
+            if task.is_downloadable:
                 saved_path = client.dowload_file(task)
-```
-
-connect by your self (close connection by yourself)
-
-```python
-from aio_anyrun.client import AnyRunClient
-
-client = AnyRunClient()
-await client.init_connection_with_default_client()
-tasks = await client.get_public_tasks()
-await client.close()
 ```
 
 ### Search
