@@ -5,14 +5,13 @@ verify_ssl = true
 
 [dev-packages]
 pytest = "*"
-tox = "*"
+aiounittest = "*"
 
 [packages]
 aiohttp = "*"
 typing-extensions = "*"
-
-[requires]
-python_version = "3.8"
+async-generator = "*"
+dataclasses = "*"
 
 [scripts]
 tests = "pytest -v"

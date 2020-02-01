@@ -1,4 +1,7 @@
-import unittest
+try:
+    from unittest import IsolatedAsyncioTestCase as AsyncTestCase
+except ImportError:
+    from aiounittest import AsyncTestCase
 
 from aio_anyrun import client
 
@@ -9,7 +12,7 @@ TESTS_FOR_SINGLE_TASK = {
 }
 
 
-class TestAnyRunClient(unittest.IsolatedAsyncioTestCase):
+class TestAnyRunClient(AsyncTestCase):
 
     async def test_get_public_tasks(self):
         c = client.AnyRunClient()

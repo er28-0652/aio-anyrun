@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import aiohttp
 import json
 import hashlib
@@ -7,8 +5,12 @@ import time
 import string
 import random
 import typing as t
-from contextlib import asynccontextmanager
 from pathlib import Path
+
+try:
+    from contextlib import asynccontextmanager
+except ImportError:
+    from async_generator import asynccontextmanager
 
 from aio_anyrun import collection
 from aio_anyrun import const as cst
@@ -72,7 +74,7 @@ async def download_file(
                 return save_path
 
 async def _login_request_handler(
-    client: AnyRunClient,
+    client: 'AnyRunClient',
     name: str,
     task_id: str
 ) -> cst.HANDLER_FUNC:
@@ -88,7 +90,7 @@ async def _login_request_handler(
     return _handle    
 
 async def _sub_request_handler(
-    client: AnyRunClient,
+    client: 'AnyRunClient',
     name: str,
     task_id: str
 ) -> cst.HANDLER_FUNC:
@@ -109,7 +111,7 @@ async def _sub_request_handler(
     return _handle    
 
 async def _method_request_handler(
-    client: AnyRunClient,
+    client: 'AnyRunClient',
     _: str,
     task_id: str
 ) -> cst.HANDLER_FUNC:
@@ -193,7 +195,7 @@ class AnyRunClient:
         user_agent: str = '',
         autoclose: bool = True,
         timeout: int = 30
-    ) -> t.AsyncIterator[AnyRunClient]:
+    ) -> t.AsyncIterator['AnyRunClient']:
         ''' Create AnyRun client with contextmanager.
         Args:
             user_agent: User-Agent for client, default is no string
@@ -223,7 +225,7 @@ class AnyRunClient:
         name: str,
         params: t.Optional[dict] = None,
         task_id: t.Optional[str] = None,
-        handler: t.Callable[[AnyRunClient, str, str], [cst.HANDLER_FUNC]] = _method_request_handler
+        handler: t.Callable[['AnyRunClient', str, str], cst.HANDLER_FUNC] = _method_request_handler
     ) -> cst.HANDLER_FUNC:
         ''' Send method request message.
         Args:
@@ -248,7 +250,7 @@ class AnyRunClient:
         self, 
         name: str, 
         params: t.Optional[list] = None,
-        handler: t.Callable[[AnyRunClient, str, str], [cst.HANDLER_FUNC]] =_sub_request_handler
+        handler: t.Callable[['AnyRunClient', str, str], cst.HANDLER_FUNC] =_sub_request_handler
     ) -> cst.HANDLER_FUNC:
         ''' Send subscription request message.
         Args:
