@@ -1,7 +1,8 @@
+import typing as t
 from aio_anyrun import const as cst
 
 class Task:
-    def __init__(self, task_info):
+    def __init__(self, task_info: dict):
         self._info = task_info
     
     @property
@@ -37,15 +38,15 @@ class Task:
         return self.main_object['hashes']
 
     @property
-    def md5(self):
+    def md5(self) -> str:
         return self.hashes['md5']
 
     @property
-    def sha1(self):
+    def sha1(self) -> str:
         return self.hashes['sha1']
     
     @property
-    def sha256(self):
+    def sha256(self) -> str:
         return self.hashes['sha256']
     
     @property
@@ -68,21 +69,25 @@ class Task:
         return self.main_object['info']
         
     @property
-    def file_type(self):
+    def file_type(self) -> t.Optional[str]:
         if self.run_type != 'url':
             return self.info['meta']['file']
     
     @property
-    def mime_type(self):
+    def mime_type(self) -> t.Optional[str]:
         if self.run_type != 'url':
             return self.info['meta']['mime']
     
     @property
-    def exif(self):
+    def exif(self) -> t.Optional[dict]:
         if self.run_type != 'url':
             return self.info['meta']['exif']
     
     @property
-    def ole(self):
+    def ole(self) -> t.Optional[str]:
         if self.run_type != 'url':
             return self.info['meta']['ole'] 
+    
+    @property
+    def is_downloadable(self) -> bool:
+        return self.run_type != 'url'
