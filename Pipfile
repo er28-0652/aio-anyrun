@@ -8,7 +8,7 @@ pytest = "*"
 tox = "*"
 
 [packages]
-websocket-client = "*"
+aiohttp = "*"
 typing-extensions = "*"
 
 [requires]
