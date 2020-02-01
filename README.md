@@ -1,3 +1,5 @@
+[![Actions Status](https://github.com/er28-0652/aio-anyrun/workflows/Main%20workflow/badge.svg)](https://github.com/er28-0652/aio-anyrun/actions)
+
 # aio-anyrun
 
 Asynchronous python client of [ANY.RUN](https://app.any.run/) using unofficial API.
