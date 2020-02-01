@@ -5,7 +5,7 @@
 Asynchronous python client of [ANY.RUN](https://app.any.run/) using unofficial API.
 
 ## Requirement
-* python >= 3.8
+* python >= 3.6
 
 ## Usage
 
