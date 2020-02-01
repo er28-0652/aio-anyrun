@@ -1,11 +1,17 @@
 import aiohttp
 import json
+import hashlib
+import time
 import string
 import random
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from aio_anyrun import collection
 from aio_anyrun import const as cst
+
+
+DEFAULT_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36'
 
 
 def generate_token(n=8) -> str:
@@ -15,24 +21,97 @@ def generate_token(n=8) -> str:
 def generate_id() -> str:
     return str(random.randint(100, 999))
 
+def generate_random_int_str(n=10) -> str:
+    letters = '1234567890'
+    return ''.join(random.choice(letters) for _ in range(n))
+
+def generate_google_analytics_id():
+    return f'GA1.2.{generate_random_int_str()}.{int(time.time())}'
+
+def generate_random_cookies_with_token(token):
+    return {
+        '__cfduid': hashlib.sha256(generate_random_int_str().encode('utf-8')).hexdigest(),
+        '_ga': generate_google_analytics_id(),
+        '_gid': generate_google_analytics_id(),
+        'tokenLogin': token}
+
+async def download_file(
+    task_uuid: str,
+    object_uuid: str,
+    token: str,
+    dest: str = '.',
+    raise_for_status=True,
+    chunk_size: int = 1024) -> Path:
+    
+    url = f'https://content.any.run/tasks/{task_uuid}/download/files/{object_uuid}'
+    headers = {
+        'Referer': f'https://app.any.run/tasks/{task_uuid}/',
+        'User-Agent': DEFAULT_USER_AGENT
+    }
+
+    cookies = generate_random_cookies_with_token(token)
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, headers=headers, cookies=cookies, raise_for_status=raise_for_status) as resp:
+            save_path = Path(dest, resp.content_disposition.filename)
+            with save_path.open('wb') as fd:
+                async for chunk in resp.content.iter_chunked(chunk_size):
+                    fd.write(chunk)
+                return save_path
+
+
+async def _login_request_handler(client, name, task_id):
+    async def _handle():
+        while True:
+            msg = await client.recv_message_loop()
+
+            if msg.get('msg') == 'added':
+                if msg.get('collection') == name:
+                    return msg.get('fields')
+    return _handle    
+
+async def _sub_request_handler(client, name, task_id):
+    async def _handle():
+        results = []
+        while True:
+            msg = await client.recv_message_loop()
+            
+            if msg.get('msg') == 'added':
+                if msg.get('collection') == name:
+                    results.append(msg.get('fields'))
+            elif msg.get('msg') == 'ready':
+                if msg.get('subs')[0] == task_id:
+                    break
+        return results
+    return _handle    
+
+async def _method_request_handler(client, _, task_id):
+    async def _handle():
+        while True:
+            msg = await client.recv_message_loop()
+            if msg.get('msg') == 'result':
+                if msg.get('id') == task_id:
+                    return msg.get('result')
+    return _handle 
 
 class AnyRunError(Exception):
     pass
 
 
 class AnyRunClient:
-    '''
+    ''' Asynchronous client for AnyRun.
     Usage:
-        connect with contextmanager
+        1. connect with contextmanager
+        ... from aio_anyrun.client import AnyRunClient
         ... async with AnyRunClient.connect() as client:
         ...     tasks = await client.get_public_tasks()
 
-        connect by your self (close connection by yourself)
+        2. connect by your self (close connection by yourself)
+        ... from aio_anyrun.client import AnyRunClient
         ... client = AnyRunClient()
         ... await client.init_connection_with_default_client()
         ... tasks = await client.get_public_tasks()
         ... await client.close()
-    
     '''
 
     METHOD_COLLECTION_TABLE = {
@@ -45,7 +124,8 @@ class AnyRunClient:
 
     def __init__(self):
         self.session = aiohttp.ClientSession()
-        self.cleint = None
+        self.client = None
+        self.login_token = None
         self._current_token_id = 1
     
     async def _init_client(self, user_agent='', autoclose=True, timeout=30):
@@ -85,12 +165,12 @@ class AnyRunClient:
     def _task_id(self):
         c_token = self._current_token_id
         self._current_token_id += 1
-        return c_token
+        return str(c_token)
     
     async def _send_message(self, msg):
         await self.client.send_json([json.dumps(msg)])
         
-    async def send_message(self, name, params=None, task_id=None):
+    async def send_message(self, name, params=None, task_id=None, handler=_method_request_handler):
         task_id = task_id or self._task_id
         await self._send_message(
             {
@@ -100,9 +180,9 @@ class AnyRunClient:
                 'id': task_id
             }
         )
-        return await self.method_request_handler(task_id)
+        return await handler(self, task_id)
     
-    async def subscribe(self, name, params: list = []):
+    async def subscribe(self, name, params: list = [], handler=_sub_request_handler):
         task_id = generate_token(n=17)
         await self._send_message(
             {
@@ -112,8 +192,8 @@ class AnyRunClient:
                 'id': task_id
             }
         )
-        return await self.sub_request_handler(
-            self.METHOD_COLLECTION_TABLE.get(name) or name, task_id)
+        return await handler(
+            self, self.METHOD_COLLECTION_TABLE.get(name) or name, task_id)
         
     @staticmethod
     def _to_json(data):
@@ -135,34 +215,10 @@ class AnyRunClient:
             elif msg.get('error') is not None:
                 raise AnyRunError(msg['error']['message'])
             else:
-                return msg
-
-    async def sub_request_handler(self, name, task_id):
-        async def _handle():
-            results = []
-            while True:
-                msg = await self.recv_message_loop()
-                
-                if msg.get('msg') == 'added':
-                    if msg.get('collection') == name:
-                        results.append(msg.get('fields'))
-                elif msg.get('msg') == 'ready':
-                    if msg.get('subs')[0] == task_id:
-                        break
-            return results
-        return _handle    
-    
-    async def method_request_handler(self, task_id):
-        async def _handle():
-            while True:
-                msg = await self.recv_message_loop()
-                if msg.get('msg') == 'result':
-                    if msg.get('id') == task_id:
-                        return msg.get('result')
-        return _handle    
+                return msg   
     
     @staticmethod
-    def create_params(
+    def _create_params(
         is_public: bool = True,
         hash_: str = '',
         run_type: cst.RUN_TYPES.types = [],
@@ -203,7 +259,7 @@ class AnyRunClient:
     async def get_public_tasks(self, **kwargs):
         '''Get public tasks based on the given query parameters.'''
 
-        params = self.create_params(**kwargs)
+        params = self._create_params(**kwargs)
         
         resp_handler = await self.subscribe(
             'publicTasks', [params['skip']+50, params['skip'], params])
@@ -227,9 +283,42 @@ class AnyRunClient:
         if not task:
             raise AnyRunError(f'Failed to get task. uuid={task_uuid}')
             
-        return task[0]
+        return collection.Task(task[0])
     
     async def search(self, **kwargs):
-        params = self.create_params(**kwargs)
+        params = self._create_params(**kwargs)
         resp_handler = await self.send_message('getTasks', params, generate_id())
-        return await resp_handler()
+        tasks = await resp_handler()
+        return [collection.Task(res) for res in tasks['res']]
+
+    async def download_file(self, task: collection.Task, dest: str = '.'):
+        if not self.login_token:
+            raise AnyRunError('Token not found. Need to login before downloading file.')
+        
+        return await download_file(
+            task.task_uuid, task.object_uuid, self.login_token, dest)
+    
+    async def logout(self):
+        if self.login_token is not None:
+            await self.send_message('logout')
+            self.login_token = None
+    
+    async def login(self, email: str, password: str):
+        if not self.login_token:
+            resp_handler = await self.send_message(
+                'login',
+                {
+                    'user': {'email': email},
+                    'password': {
+                        'digest': hashlib.sha256(password.encode('utf-8')).hexdigest(),
+                        'algorithm': 'sha-256'
+                    }
+                },
+                handler=_login_request_handler
+            )
+            info = await resp_handler()
+            
+            # get latest token
+            self.login_token = info['services']['resume']['loginTokens'][-1]['hashedToken']
+
+        return self.login_token is not None
