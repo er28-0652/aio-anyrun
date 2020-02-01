@@ -11,6 +11,7 @@ aiounittest = "*"
 aiohttp = "*"
 typing-extensions = "*"
 async-generator = "*"
+dataclasses = "*"
 
 [scripts]
 tests = "pytest -v"
