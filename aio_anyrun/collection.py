@@ -5,6 +5,12 @@ class Task:
     def __init__(self, task_info: dict):
         self._info = task_info
     
+    def __str__(self):
+        return f'Task(run_type={self.run_type}, name={self.name}, verdict={self.verdict}, task_uuid={self.task_uuid}, object_uuid={self.object_uuid})'
+    
+    def __repr__(self):
+        return self.__str__()
+    
     @property
     def threat_level(self) -> int:
         return self._info['scores']['verdict']['threat_level']
