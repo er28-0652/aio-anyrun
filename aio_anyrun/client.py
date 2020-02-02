@@ -302,10 +302,10 @@ class AnyRunClient:
     def _create_params(
         is_public: bool = True,
         hash_: str = '',
-        run_type: cst.RUN_TYPES.types = [],
+        run_type: t.Optional[cst.RUN_TYPES.types] = None,
         name: str = '',
-        verdict: cst.VERDICTS.types = [],
-        extensions: cst.EXTENSIONS.types = [],
+        verdict: t.Optional[cst.VERDICTS.types] = None,
+        extensions: t.Optional[cst.EXTENSIONS.types] = None,
         ip: str = '',
         domain: str = '',
         file_hash: str = '',
@@ -337,9 +337,9 @@ class AnyRunClient:
                 if you want to search past 50~100, pass like `skip=50`.
         '''
         
-        run_type = [run_type] if isinstance(run_type, str) else run_type
-        verdict = [verdict] if isinstance(verdict, str) else verdict
-        extensions = [extensions] if isinstance(extensions, str) else extensions
+        run_type = [run_type] if isinstance(run_type, str) else run_type or []
+        verdict = [verdict] if isinstance(verdict, str) else verdict or []
+        extensions = [extensions] if isinstance(extensions, str) else extensions or []
 
         params = {
             'isPublic': is_public,

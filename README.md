@@ -58,3 +58,19 @@ async with AnyRunClient.connect() as client:
         tag='opendir'
     )
 ```
+
+### Commandline
+
+`aio-anyrun` provides CLI interface. see `--help` for details.
+
+```bash
+$ python -m aio_anyrun --help
+Usage: __main__.py [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  download  Download file from given task UUID.UUID can be found in URL...
+  search    Search tasks
+```

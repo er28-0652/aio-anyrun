@@ -9,6 +9,9 @@ class AnyRunConsts:
     types: t.Any
     data: dict
 
+    def data_keys(self):
+        return list(self.data.keys())
+
 
 RUN_TYPES = AnyRunConsts(
     types=t.List[Literal['url', 'file']],
