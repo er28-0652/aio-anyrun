@@ -119,14 +119,15 @@ REPUTATION_TABLE: t.Dict[int, str] = {
 
 @dataclass
 class IoCObject:
-    category: str
-    type: str
-    ioc: str
-    reputation: StrOrInt
+    category: str = ''
+    type: str = ''
+    ioc: str = ''
+    reputation: StrOrInt = ''
     name: str = ''
     
     def __post_init__(self):
-        self.reputation = REPUTATION_TABLE[t.cast(int, self.reputation)]
+        if self.reputation:
+            self.reputation = REPUTATION_TABLE[t.cast(int, self.reputation)]
 
 
 class IoC:
@@ -142,7 +143,9 @@ class IoC:
         return self.__str__()
     
     @staticmethod
-    def _parse(obj) -> t.List[IoCObject]:
+    def _parse(obj: t.Optional[dict]) -> t.List[IoCObject]:
+        if obj is None:
+            return [IoCObject()]
         return [IoCObject(**o) for o in obj]
     
     @property
@@ -151,15 +154,15 @@ class IoC:
     
     @property
     def dropped_files(self) -> t.List[IoCObject]:
-        return self._parse(self.ioc['Dropped executable file'])
+        return self._parse(self.ioc.get('Dropped executable file'))
     
     @property
     def dns(self) -> t.List[IoCObject]:
-        return self._parse(self.ioc['DNS requests'])
+        return self._parse(self.ioc.get('DNS requests'))
     
     @property
     def connections(self) -> t.List[IoCObject]:
-        return self._parse(self.ioc['Connections'])
+        return self._parse(self.ioc.get('Connections'))
 
 
 class MITRE_Attack:
