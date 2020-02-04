@@ -73,6 +73,27 @@ async def download_file(
                     fd.write(chunk)
                 return save_path
 
+async def _incidents_request_handler(
+    client: 'AnyRunClient',
+    name: str,
+    task_id: str
+) -> cst.HANDLER_FUNC:
+    ''' Customized response handler for allIncidents request.
+    '''
+    async def _handle() -> t.List[dict]:
+        results = []
+        while True:
+            msg = await client.recv_message_loop()
+
+            if msg.get('msg') == 'added':
+                if msg.get('collection') == name:
+                    results.append(msg)
+            elif msg.get('msg') == 'ready':
+                if msg.get('subs')[0] == task_id:
+                    break
+        return results
+    return _handle
+
 async def _login_request_handler(
     client: 'AnyRunClient',
     name: str,
@@ -150,8 +171,10 @@ class AnyRunClient:
         'singleTask': 'tasks',
         'publicTasks': 'tasks',
         'login': 'users',
-        'taskexists': 'taskExists'
-        
+        'taskexists': 'taskExists',
+        'mitre': 'mitre',
+        'allIncidents': 'events.incidents',
+        'rawincidents': 'events.rawincidents' 
     }
 
     def __init__(self):
@@ -469,3 +492,18 @@ class AnyRunClient:
         graph = await resp_handler()
         return graph
     
+    async def get_incidents(self, task_uuid: str) -> t.List[dict]:
+        ''' Get indicators of suspicious behavior.
+        '''
+        task_obj_id = await self.check_task_exists(task_uuid)
+        if not task_obj_id:
+            raise AnyRunError(f'No task found. uuid={task_uuid}')
+        
+        resp_handler = await self.subscribe(
+            'allIncidents',
+            task_obj_id,
+            handler=_incidents_request_handler
+        )
+        
+        incidents = await resp_handler()
+        return incidents
