@@ -1,4 +1,5 @@
 import click
+import json
 import os
 import asyncio
 import typing as t
@@ -68,7 +69,8 @@ async def download(uuid: str, email: str, dest: str):
     except Exception as e:
         click.echo(f'[!] download fail. err: {e}')
 
-@cli.command(help='Search tasks')
+
+@cli.command(help='Search tasks.')
 @click.option('-h', '--hash', 'hash_', type=str, default='', help='file hash for task to search')
 @click.option('-r', '--run-types', 'run_types', type=click.Choice(cst.RUN_TYPES.data_keys()), multiple=True, help='object type of task')
 @click.option('-n', '--name', type=str, default='', help='filename or URL to search')
@@ -117,6 +119,24 @@ async def search(
             click.echo(f'mime_type:\t{task.mime_type}')
             click.echo(f'task_uuid:\t{task.task_uuid}')
             click.echo()
+
+
+@cli.command(help='Get IoC information.')
+@click.option('-u', '--uuid', callback=is_valid_uuid, type=str, required=True, help='UUID for task')
+@click.option('-r', '--raw', is_flag=True, help='print raw json output')
+@coro
+async def get_ioc(uuid, raw):
+    async with AnyRunClient.connect() as c:
+        iocs = await c.get_ioc(uuid)
+        if raw:
+            click.echo(iocs.json())
+        else:
+            for _, values in iocs.items():
+                for value in values:
+                    for k, v in value.items():
+                        click.echo(f'{k}: {v}')
+                    click.echo()
+
 
 def main():
     cli()
