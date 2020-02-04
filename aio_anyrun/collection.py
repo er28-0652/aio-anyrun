@@ -1,5 +1,8 @@
 import typing as t
+from dataclasses import dataclass
+
 from aio_anyrun import const as cst
+
 
 class Task:
     def __init__(self, task_info: dict):
@@ -22,6 +25,10 @@ class Task:
             if v == level:
                 return k
         return ''
+    
+    @property
+    def tags(self) -> t.List[str]:
+        return self._info['tags']
     
     @property
     def task_uuid(self) -> str:
@@ -97,3 +104,58 @@ class Task:
     @property
     def is_downloadable(self) -> bool:
         return self.run_type != 'url'
+
+
+StrOrInt = t.Union[int, str]
+
+REPUTATION_TABLE: t.Dict[int, str] = {
+    0: 'unknown',
+    1: 'suspicious',
+    2: 'malicious',
+    3: 'whitelisted',
+    4: 'unsafe'
+}
+
+@dataclass
+class IoCObject:
+    category: str
+    type: str
+    ioc: str
+    reputation: StrOrInt
+    name: str = ''
+    
+    def __post_init__(self):
+        self.reputation = REPUTATION_TABLE[t.cast(int, self.reputation)]
+
+
+class IoC:
+    ''' Class to represent IoC information.
+    '''
+    def __init__(self, ioc):
+        self.ioc = ioc
+    
+    def __str__(self):
+        return f'IoC(main_object={self.main_objects}, dropped_files={self.dropped_files}, dns={self.dns}, connections={self.connections})'
+    
+    def __repr__(self):
+        return self.__str__()
+    
+    @staticmethod
+    def _parse(obj):
+        return [IoCObject(**o) for o in obj]
+    
+    @property
+    def main_objects(self) -> t.List[IoCObject]:
+        return self._parse(self.ioc['Main object'])
+    
+    @property
+    def dropped_files(self) -> t.List[IoCObject]:
+        return self._parse(self.ioc['Dropped executable file'])
+    
+    @property
+    def dns(self) -> t.List[IoCObject]:
+        return self._parse(self.ioc['DNS requests'])
+    
+    @property
+    def connections(self) -> t.List[IoCObject]:
+        return self._parse(self.ioc['Connections'])
