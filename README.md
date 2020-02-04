@@ -72,5 +72,6 @@ Options:
 
 Commands:
   download  Download file from given task UUID.UUID can be found in URL...
-  search    Search tasks
+  get-ioc   Get IoC information.
+  search    Search tasks.
 ```
