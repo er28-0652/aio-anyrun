@@ -223,7 +223,7 @@ class AnyRunClient:
     async def send_message(
         self,
         name: str,
-        params: t.Optional[dict] = None,
+        params: t.Optional[t.Union[dict, list]] = None,
         task_id: t.Optional[str] = None,
         handler: t.Callable[['AnyRunClient', str, str], cst.HANDLER_FUNC] = _method_request_handler
     ) -> cst.HANDLER_FUNC:
@@ -236,6 +236,7 @@ class AnyRunClient:
             handler: response handler for method request.
         '''
         task_id = task_id or self._task_id
+        params = [params] if isinstance(params, dict) else params
         await self._send_message(
             {
                 'msg': 'method',
@@ -447,3 +448,13 @@ class AnyRunClient:
             self.login_token = info['services']['resume']['loginTokens'][-1]['hashedToken']
 
         return self.login_token is not None
+    
+    async def get_ioc(self, task_uuid: str) -> collection.IoC:
+        ''' Get IoC information of given UUID.
+        '''
+        resp_handler = await self.send_message(
+            'getIOC',
+            params=['any.run', task_uuid]
+        )
+        ioc = await resp_handler()
+        return collection.IoC(ioc)
