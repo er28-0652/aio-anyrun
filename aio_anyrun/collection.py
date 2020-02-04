@@ -1,4 +1,5 @@
 import typing as t
+from datetime import datetime
 from dataclasses import dataclass
 
 from aio_anyrun import const as cst
@@ -159,3 +160,51 @@ class IoC:
     @property
     def connections(self) -> t.List[IoCObject]:
         return self._parse(self.ioc['Connections'])
+
+
+class MITRE_Attack:
+    def __init__(self, mitre_data: dict):
+        self.data = mitre_data
+    
+    @property
+    def _external_references(self) -> t.List[dict]:
+        return self.data['external_references']
+    
+    @property
+    def mitre_url(self) -> t.Optional[str]:
+        for ref in self._external_references:
+            if ref.get('source_name') == 'mitre-attack':
+                return ref.get('url')
+        return ''
+    
+    @property
+    def technique(self) -> str:
+        return self.data['technique']
+    
+    @property
+    def name(self) -> str:
+        return self.data['name']
+    
+    @property
+    def mitre_detection(self) -> str:
+        return self.data['x_mitre_detection']
+    
+    @property
+    def platforms(self) -> t.List[str]:
+        return self.data['x_mitre_platforms']
+    
+    @property
+    def kill_chain_phases(self) -> t.List[dict]:
+        return self.data['kill_chain_phases']
+    
+    @property
+    def description(self) -> str:
+        return self.data['description']
+    
+    @property
+    def mitre_data_sources(self) -> t.List[str]:
+        return self.data['x_mitre_data_sources']
+    
+    @property
+    def created(self) -> datetime:
+        return datetime.strptime(self.data['created'], '%Y-%m-%dT%H:%M:%S.%f%z')
