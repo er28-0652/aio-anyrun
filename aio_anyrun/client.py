@@ -264,7 +264,7 @@ class AnyRunClient:
             {
                 'msg': 'method',
                 'method': name,
-                'params': [params],
+                'params': params,
                 'id': task_id
             }
         )
