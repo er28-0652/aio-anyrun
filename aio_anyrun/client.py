@@ -458,3 +458,14 @@ class AnyRunClient:
         )
         ioc = await resp_handler()
         return collection.IoC(ioc)
+
+    async def get_process_graph(self, task_uuid: str) -> str:
+        ''' Get process sequence graph as SVG.
+        '''
+        resp_handler = await self.send_message(
+            'renderGraph',
+            params=[task_uuid, 'any.run']
+        )
+        graph = await resp_handler()
+        return graph
+    
