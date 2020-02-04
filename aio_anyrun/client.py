@@ -508,7 +508,9 @@ class AnyRunClient:
         incidents = await resp_handler()
         return incidents
     
-    async def get_mitre(self):
+    async def get_mitre(self) -> t.Dict[str, collection.MITRE_Attack]:
+        ''' Get MITRE ATT&CK list.
+        '''
         resp_handler = await self.subscribe('mitre')
         return {mitre['technique']: collection.MITRE_Attack(mitre) 
                 for mitre in await resp_handler()}
