@@ -132,17 +132,17 @@ class IoCObject:
 class IoC:
     ''' Class to represent IoC information.
     '''
-    def __init__(self, ioc):
+    def __init__(self, ioc: dict):
         self.ioc = ioc
     
-    def __str__(self):
+    def __str__(self) -> str:
         return f'IoC(main_object={self.main_objects}, dropped_files={self.dropped_files}, dns={self.dns}, connections={self.connections})'
     
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.__str__()
     
     @staticmethod
-    def _parse(obj):
+    def _parse(obj) -> t.List[IoCObject]:
         return [IoCObject(**o) for o in obj]
     
     @property
