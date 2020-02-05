@@ -44,13 +44,12 @@ def cli(ctx):
         print(ctx.get_help())
 
 
-@cli.command(help='Download file from given task UUID.\
-UUID can be found in URL like: https://app.any.run/tasks/<UUID>/')
+@cli.command(help='Download file')
 @click.option('-u', '--uuid', callback=is_valid_uuid, type=str, required=True, help='UUID for task')
 @click.option('-e', '--email', type=str, help='email address for ANY.RUN')
 @click.option('-d', '--dest', type=str, default='.', help='path to save file')
 @coro
-async def download(uuid: str, email: str, dest: str):
+async def download_file(uuid: str, email: str, dest: str):
     # get credentials
     email = email or get_email()
     password = get_password()
@@ -65,12 +64,34 @@ async def download(uuid: str, email: str, dest: str):
                 raise ValueError(f'not downloadable. Task(uuid={uuid}, type={task.run_type}, name={task.name})')
             
             saved_path = await c.download_file(task, dest)
-            click.echo(f'[*] download success.\npath:\t{saved_path.absolute()}\nsha1:\t{task.sha1}\nsha256:\t{task.sha256}')
+            click.echo(f'[*] download success. (Password: infected)\npath:\t{saved_path.absolute()}\nsha1:\t{task.sha1}\nsha256:\t{task.sha256}')
     except Exception as e:
         click.echo(f'[!] download fail. err: {e}')
 
 
-@cli.command(help='Search tasks.')
+@cli.command(help='Download pcap')
+@click.option('-u', '--uuid', callback=is_valid_uuid, type=str, required=True, help='UUID for task')
+@click.option('-e', '--email', type=str, help='email address for ANY.RUN')
+@click.option('-d', '--dest', type=str, default='.', help='path to save pcap')
+@coro
+async def download_pcap(uuid: str, email: str, dest: str):
+    # get credentials
+    email = email or get_email()
+    password = get_password()
+
+    try:
+        async with AnyRunClient.connect() as c:
+            if not await c.login(email, password):
+                raise RuntimeError(f'Login failed.')
+
+            task = await c.get_single_task(uuid)
+            saved_path = await c.download_pcap(task, dest)
+            click.echo(f'[*] download success.\npath:\t{saved_path.absolute()}')
+    except Exception as e:
+        click.echo(f'[!] download fail. err: {e}')
+
+
+@cli.command(help='Search tasks')
 @click.option('-h', '--hash', 'hash_', type=str, default='', help='file hash for task to search')
 @click.option('-r', '--run-types', 'run_types', type=click.Choice(cst.RUN_TYPES.data_keys()), multiple=True, help='object type of task')
 @click.option('-n', '--name', type=str, default='', help='filename or URL to search')
@@ -121,7 +142,7 @@ async def search(
             click.echo()
 
 
-@cli.command(help='Get IoC information.')
+@cli.command(help='Get IoC information')
 @click.option('-u', '--uuid', callback=is_valid_uuid, type=str, required=True, help='UUID for task')
 @click.option('-r', '--raw', is_flag=True, help='print raw json output')
 @coro
