@@ -1,7 +1,6 @@
 import json
 import typing as t
 from datetime import datetime
-from dataclasses import dataclass
 
 from aio_anyrun import const as cst
 
