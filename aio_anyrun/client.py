@@ -40,13 +40,44 @@ def generate_random_cookies_with_token(token: str) -> dict:
         '_gid': generate_google_analytics_id(),
         'tokenLogin': token}
 
+async def _download(
+    url: str,
+    dest: str,
+    chunk_size: int = 1024,
+    **kwargs
+) -> Path:
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, **kwargs) as resp:
+            save_path = Path(dest, resp.content_disposition.filename)
+            with save_path.open('wb') as fd:
+                async for chunk in resp.content.iter_chunked(chunk_size):
+                    fd.write(chunk)
+                return save_path
+
+async def download_pcap(
+    task_uuid: str,
+    token: str,
+    dest: str = '.',
+    raise_for_status: bool = True
+) -> Path:
+    url = f'https://content.any.run/tasks/{task_uuid}/download/pcap'
+
+    headers = {
+        'Referer': f'https://app.any.run/tasks/{task_uuid}/',
+        'User-Agent': DEFAULT_USER_AGENT
+    }
+    cookies = generate_random_cookies_with_token(token)
+
+    return await _download(
+        url, dest, headers=headers, cookies=cookies, raise_for_status=raise_for_status)
+
+
 async def download_file(
     task_uuid: str,
     object_uuid: str,
     token: str,
     dest: str = '.',
-    raise_for_status: bool = True,
-    chunk_size: int = 1024
+    raise_for_status: bool = True
 ) -> Path:
     ''' Download file from ANY.RUN.
     Args:
@@ -56,22 +87,18 @@ async def download_file(
         raise_for_status: if True, raise exception when status is not 200
         chunk_size: chunk size to read for each time
     '''
-    
+
     url = f'https://content.any.run/tasks/{task_uuid}/download/files/{object_uuid}'
+
     headers = {
         'Referer': f'https://app.any.run/tasks/{task_uuid}/',
         'User-Agent': DEFAULT_USER_AGENT
     }
-
     cookies = generate_random_cookies_with_token(token)
 
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, headers=headers, cookies=cookies, raise_for_status=raise_for_status) as resp:
-            save_path = Path(dest, resp.content_disposition.filename)
-            with save_path.open('wb') as fd:
-                async for chunk in resp.content.iter_chunked(chunk_size):
-                    fd.write(chunk)
-                return save_path
+    return await _download(
+        url, dest, headers=headers, cookies=cookies, raise_for_status=raise_for_status)
+
 
 async def _incidents_request_handler(
     client: 'AnyRunClient',
@@ -117,7 +144,7 @@ async def _sub_request_handler(
 ) -> cst.HANDLER_FUNC:
     ''' Default response handler for sub request.
     '''
-    async def _handle():
+    async def _handle() -> t.List[dict]:
         results = []
         while True:
             msg = await client.recv_message_loop()
@@ -444,7 +471,21 @@ class AnyRunClient:
         
         return await download_file(
             task.task_uuid, task.object_uuid, self.login_token, dest)
-    
+
+    async def download_pcap(self, task: collection.Task, dest: str = '.') -> Path:
+        ''' Download pcap based on given task. saved filename will be like '<UUID>.pcap'.
+
+        Args:
+            task: Task object which can be retrieved by 
+                `get_single_task`, `get_public_tasks` or `search`.
+            dest: destination folder to save file.
+        '''
+        if not self.login_token:
+            raise AnyRunError('Token not found. Need to login before downloading file.')
+        
+        return await download_pcap(
+            task.task_uuid, self.login_token, dest)
+
     async def logout(self):
         if self.login_token is not None:
             await self.send_message('logout')
