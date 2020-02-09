@@ -220,7 +220,7 @@ class AnyRunClient:
             f'wss://app.any.run/sockjs/{generate_id()}/{generate_token()}/websocket',
             headers={'User-Agent': user_agent},
             autoclose=autoclose,
-            receive_timeout=timeout)
+            timeout=timeout)
         
     async def _init_connection(self):
         await self._send_message({
