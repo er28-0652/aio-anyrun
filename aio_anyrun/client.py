@@ -1,6 +1,7 @@
 import aiohttp
 import json
 import hashlib
+import logging
 import time
 import string
 import random
@@ -14,6 +15,10 @@ except ImportError:
 
 from aio_anyrun import collection
 from aio_anyrun import const as cst
+
+
+logger = logging.getLogger(__name__)
+
 
 # this will be used on downloading file
 DEFAULT_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36'
@@ -108,6 +113,7 @@ async def _incidents_request_handler(
     ''' Customized response handler for allIncidents request.
     '''
     async def _handle() -> t.List[dict]:
+        logger.debug(f'Start receiving message. name={name}')
         results = []
         while True:
             msg = await client.recv_message_loop()
@@ -129,6 +135,7 @@ async def _login_request_handler(
     ''' Customized response handler for login request.
     '''
     async def _handle() -> t.Optional[dict]:
+        logger.debug(f'Start receiving message. name={name}')
         while True:
             msg = await client.recv_message_loop()
 
@@ -145,6 +152,7 @@ async def _sub_request_handler(
     ''' Default response handler for sub request.
     '''
     async def _handle() -> t.List[dict]:
+        logger.debug(f'Start receiving message. name={name}')
         results = []
         while True:
             msg = await client.recv_message_loop()
@@ -160,14 +168,16 @@ async def _sub_request_handler(
 
 async def _method_request_handler(
     client: 'AnyRunClient',
-    _: str,
+    name: str,
     task_id: str
 ) -> cst.HANDLER_FUNC:
     ''' Default response handler for method request.
     '''
     async def _handle():
+        logger.debug(f'Start receiving message. name={name}')
         while True:
             msg = await client.recv_message_loop()
+            
             if msg.get('msg') == 'result':
                 if msg.get('id') == task_id:
                     return msg.get('result')
@@ -268,6 +278,7 @@ class AnyRunClient:
         return str(c_token)
     
     async def _send_message(self, msg: dict):
+        logger.debug(f'(send) -> {msg}')
         await self.client.send_json([json.dumps(msg)])
         
     async def send_message(
@@ -341,6 +352,7 @@ class AnyRunClient:
         '''
         while True:
             msg = await self.recv_message()
+            logger.debug(f'(recv) <- {msg}')
             
             if msg.get('msg') == 'error':
                 raise AnyRunError(f'{msg["reason"]}, offendingMessage={msg["offendingMessage"]}')

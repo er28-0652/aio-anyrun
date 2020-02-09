@@ -1,5 +1,5 @@
 import click
-import json
+import logging
 import os
 import asyncio
 import typing as t
@@ -29,6 +29,11 @@ def get_password():
         password = getpass('Password: ')
     return password
 
+
+def enable_debug_logging():
+    logging.basicConfig(
+        format='%(asctime)s : %(threadName)s : %(levelname)s : %(message)s',
+        level=logging.DEBUG)
 
 def coro(f):
     @wraps(f)
@@ -103,6 +108,7 @@ async def download_pcap(uuid: str, email: str, dest: str):
 @click.option('-m', '--mitre-id', type=str, default='', help='MITRE ATT&CK ID to search, only one tag is acceptables')
 @click.option('-s', '--suricata-sid', type=str, default='', help='Suricata SID to search')
 @click.option('-t', '--tag', type=str, default='', help='tag name to search, only one tag is acceptable')
+@click.option('--debug', is_flag=True, default=False, help='enable debug logging')
 @coro
 async def search(
     hash_: str,
@@ -115,8 +121,12 @@ async def search(
     file_hash: str,
     mitre_id: str,
     suricata_sid: str,
-    tag: str
+    tag: str,
+    debug: bool
 ):
+    if debug:
+        enable_debug_logging()
+
     async with AnyRunClient.connect() as c:
         tasks = await c.search(
             hash_=hash_,
@@ -145,8 +155,12 @@ async def search(
 @cli.command(help='Get IoC information')
 @click.option('-u', '--uuid', callback=is_valid_uuid, type=str, required=True, help='UUID for task')
 @click.option('-r', '--raw', is_flag=True, help='print raw json output')
+@click.option('--debug', is_flag=True, default=False, help='enable debug logging')
 @coro
-async def get_ioc(uuid, raw):
+async def get_ioc(uuid: str, raw: bool, debug: bool):
+    if debug:
+        enable_debug_logging()
+
     async with AnyRunClient.connect() as c:
         iocs = await c.get_ioc(uuid)
         if raw:
