@@ -71,7 +71,8 @@ Options:
   --help  Show this message and exit.
 
 Commands:
-  download  Download file from given task UUID.UUID can be found in URL...
-  get-ioc   Get IoC information.
-  search    Search tasks.
+  download-file  Download file
+  download-pcap  Download pcap
+  get-ioc        Get IoC information
+  search         Search tasks
 ```
